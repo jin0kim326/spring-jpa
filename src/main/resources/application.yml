@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/study
+    username: jinyoung
+    password:
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+#        show_sql: -> 얘는 system.out으로 찍힘
+        format_sql: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug  #얘는 로그로 찍힘
+    org.hibernate.type: trace #파라미터를 찍어줌
