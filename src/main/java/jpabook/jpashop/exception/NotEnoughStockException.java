@@ -16,4 +16,9 @@ public class NotEnoughStockException extends RuntimeException {
     public NotEnoughStockException(Throwable cause) {
         super(cause);
     }
+
+    @Override
+    public String getMessage() {
+        return "재고가 부족합니다.";
+    }
 }
