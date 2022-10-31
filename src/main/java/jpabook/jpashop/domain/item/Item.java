@@ -2,6 +2,7 @@ package jpabook.jpashop.domain.item;
 
 import jpabook.jpashop.domain.Category;
 import jpabook.jpashop.exception.NotEnoughStockException;
+import jpabook.jpashop.service.UpdateItemDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,11 +17,11 @@ import java.util.List;
 public abstract class Item {
     @Id @GeneratedValue
     @Column(name = "item_id")
-    private Long id;
+    protected Long id;
 
-    private String name;
-    private int price;
-    private int stockQuantity;
+    protected String name;
+    protected int price;
+    protected int stockQuantity;
 
     @ManyToMany(mappedBy = "items")
     private List<Category> categries = new ArrayList<>();
@@ -36,5 +37,13 @@ public abstract class Item {
             throw new NotEnoughStockException("need more stock");
         }
         this.stockQuantity = restStock;
+    }
+
+    public void change(UpdateItemDto dto) {
+        this.name = dto.getName();
+        this.price = dto.getPrice();
+        this.stockQuantity = dto.getStockQuantity();
+//        this.author = dto.getAuthor();
+//        this.isbn = dto.getAuthor();
     }
 }
