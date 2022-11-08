@@ -11,7 +11,7 @@ spring:
   jpa:
     database: postgresql
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     properties:
       hibernate:
 #        show_sql: -> 얘는 system.out으로 찍힘
