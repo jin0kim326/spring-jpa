@@ -12,6 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -41,6 +48,7 @@ public class MemberServiceTest {
         // given
         Member member1 = new Member();
         member1.setName("jinyoung");
+
 
         Member member2 = new Member();
         member2.setName("jinyoung");

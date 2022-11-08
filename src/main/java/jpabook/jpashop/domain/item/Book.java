@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 @Entity
 @DiscriminatorValue("B")
@@ -35,5 +37,8 @@ public class Book extends Item {
         this.stockQuantity = dto.getStockQuantity();
         this.author = dto.getAuthor();
         this.isbn = dto.getIsbn();
+
     }
+
+
 }

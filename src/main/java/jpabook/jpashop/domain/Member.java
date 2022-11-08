@@ -17,10 +17,11 @@ public class Member {
 
     private String name;
 
+    private int age;
+
     @Embedded
     private Address address;
 
     @OneToMany(mappedBy = "member") // Order에 있는 member 필드에 의해 매핑되었음. -> Order의 member가 연관관계의 주인
     private List<Order> orders = new ArrayList<>();
-
 }
