@@ -8,11 +8,49 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberApiController {
     private final MemberService memberService;
+
+    @GetMapping("/api/v1/members")
+    public List<Member> memberV1() {
+        return memberService.findMembers();
+        /**
+         * 1. 엔티티에있는 정보가 외부에 모두 노출되는문제 : @JsonIgnore를 사용해서 원하는것만 노출할 수 있겠지만 그것또한 문제
+         * 다른 화면에서는 노출하고싶을수도있기때문, Valid와 마찬가지로 화면을 위한 로직이 들어온것이 때문에 좋지않은 설계
+         *
+         * 2. 엔티티의 일부를 변경하면 API스펙도 변경해버리는 문제
+         * 3.
+         */
+    }
+
+    @GetMapping("/api/v2/members")
+    public Result memberV2() {
+        List<Member> findMembers = memberService.findMembers();
+
+        List<MemberDto> data = findMembers.stream()
+                .map(member -> new MemberDto(member.getName()))
+                .collect(Collectors.toList());
+
+        return new Result(data);
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class MemberDto {
+        private String name;
+    }
+
 
     @PostMapping("/api/v1/members")
     public CreateMemberResponse saveMemberV1(@RequestBody @Valid Member member) {
