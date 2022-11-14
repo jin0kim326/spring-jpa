@@ -5,15 +5,14 @@ import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.OrderSimpleQueryDto;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -64,6 +63,41 @@ public class OrderSimpleApiController {
          * 1 + 1 + 2 = 4로 나옴 (영속성 컨텍스트에 해당 멤버가 있기때문에 멤버조회쿼리를 또 날리지는 않는다)
          */
     }
+
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrderDto> OrderV3() {
+        List<Order> orders = orderRepository.findAllWithMemberDelivery();
+        return orders.stream()
+                .map(SimpleOrderDto::new)
+                .collect(toList());
+        /**
+         * 패치조인 적용
+         * 쿼리 한번에 조회
+         * 패치조인으로 order -> member, order->delivery는 이미 조회된 상태이므로 지연로딩X (객체 자체가 조회됨)
+         * 실무에서 객체 그래프를 자주 사용하는것은 정해져있음
+         */
+    }
+
+    @GetMapping("/api/v4/simple-orders")
+    public List<OrderSimpleQueryDto> OrderV4() {
+        return orderRepository.findOrderDtos();
+        /**
+         * V4는 원하는데이터만 골라서 조회했다. 성능면에서 v3보다 더 개선되었다고 볼수있음
+         * 그러나 재사용성이 낮음(화면에 fit 하게 맞춰서 조회하기때문에)
+         * V3는 엔티티를 조회하기때문에 재사용성이 높음, 어플래이션 단에서 translate해서 데이터 조회가능
+         *
+         * API의 스펙에 맞춰서 개발되어있음 (화면이 변경되면 리포지토리를 수정해야함)
+         */
+    }
+
+    /**
+     * 정리
+     * 1. 엔티티를 DTO로 변환하는 방법사용
+     * 2. 필요하면 fetch join으로 성능최적화 -> 대부분 성능이슈 해결
+     * 3. 그래도 안되면 DTO로 직접 조회하는 방법사용
+     * 4. 최후의 방법은 JPA가 제공하는 네이티브 SQL이나 스프링 JDBC Template을 사용
+     */
+
 
     @Data
     static class SimpleOrderDto {
