@@ -108,4 +108,23 @@ public class OrderRepository {
                         " join o.delivery d", OrderSimpleQueryDto.class
         ).getResultList();
     }
+
+    public List<Order> findAllWithItem() {
+        return em.createQuery(
+                "select distinct o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item i", Order.class)
+        .getResultList();
+        /**
+         * jpql의 Distinct는 DB의 DISTINCT 명령어가 날아감
+         * => 그러나 전체로우가 같아야 제외가 되는데 현재 쿼리에서는 제외할 수 없기때문에 쿼리의 결과는 똑같음
+         * => 단 jpa에서 자체적으로 distinct가 있으면 Order를 가져올때 같은 값(reference가 같으면 = PK가 같으면) 제외
+         *
+         * jpql distinct 의 기능
+         * 1. 디비에 distinct명령어 나감
+         * 2. 엔티티가 중복인 경우 걸러서 컬렉션에 담아줌
+         */
+    }
 }

@@ -34,6 +34,9 @@ public class OrderApiController {
         return all;
     }
 
+    /**
+     * DTO를 조회 (조회성능 낮음)
+     */
     @GetMapping("/api/v2/orders")
     public List<OrderDto> ordersV2() {
         List<Order> orders = orderRepository.findAllByString(new OrderSearch());
@@ -41,8 +44,30 @@ public class OrderApiController {
         return orders.stream()
                 .map(o -> new OrderDto(o))
                 .collect(Collectors.toList());
+    }
 
+    /**
+     * 패치조인 적용 (Distinct)
+     */
+    @GetMapping("/api/v3/orders")
+    public List<OrderDto> orderV3() {
+        /* JPQL */
+        List<Order> orders= orderRepository.findAllWithItem();
 
+        return orders.stream()
+                .map(o -> new OrderDto(o))
+                .collect(Collectors.toList());
+
+        /**
+         * 페치 조인을 적용함으로써 SQL이 1번만 실행
+         *
+         * *단점: 페이징 쿼리가 불가
+         * 1대다 조인을 하는순간 Order의 기준이 달라짐(개발자는 2개가 나올것을 예상하지만 디비결과는 4개)
+         * 하이버네이트는 경고를 내고, 모든 데이터를 디비에서 읽어오고 메모리에서 페이징을 함(매우 위험)
+         *
+         * + 컬렉션 패치 조인은 1개만 사용가능
+         *   컬렉션 둘 이상에 페치조인을 사용하면 안됨 (데이터가 부정확하게 조회될수있음)
+         */
     }
 
     @Data
