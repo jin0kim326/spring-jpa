@@ -16,6 +16,8 @@ spring:
       hibernate:
 #        show_sql: -> 얘는 system.out으로 찍힘
         format_sql: true
+        default_batch_fetch_size: 100
+        ## 컬렉션을 조회할때 In 쿼리 최대개수
 
 logging:
   level:

@@ -127,4 +127,14 @@ public class OrderRepository {
          * 2. 엔티티가 중복인 경우 걸러서 컬렉션에 담아줌
          */
     }
+
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
