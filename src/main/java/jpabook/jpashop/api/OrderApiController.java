@@ -6,6 +6,7 @@ import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.order.query.OrderFlatDto;
 import jpabook.jpashop.repository.order.query.OrderQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryRepository;
 import lombok.Data;
@@ -103,6 +104,39 @@ public class OrderApiController {
     public List<OrderQueryDto> orderV4() {
         return orderQueryRepository.findOrderQueryDtos();
     }
+
+    @GetMapping("/api/v5/orders")
+    public List<OrderQueryDto> orderV5() {
+        return orderQueryRepository.findAllByDto_optimization();
+    }
+
+    /**
+     * 플랫데이터 장점
+     * => 쿼리가 한번만 나감
+     *
+     * 단점
+     * - 페이징 불가 (Order기준으로 해야하는데 OrderItems가 기준이됨)
+     * 🔥 API 스펙이 맞지 않음. V5와 같은 스펙으로 반환하기 위해서는 작업이 필요함..
+     * 🔥 이 작업이 복잡...
+     *
+     */
+    @GetMapping("/api/v6/orders")
+    public List<OrderFlatDto> orderV6() {
+        List<OrderFlatDto> flats = orderQueryRepository.findAllByDto_flat();
+        // OrderFlatDto --> OrderQueryDto를 개발자가 직접 변환하기..
+
+        return flats;
+    }
+
+    /**
+     * JPA로 API 개발 권장 순서
+     * 1.엔티티 조회 방식
+     * 2. 컬렉션 최적화
+     *    -> 페이징필요 batch_fetch_size, @BatchSize 로 최적화
+     *    -> 페이징 필요X -> 페치 조인 사용
+     * 3. 엔티티 조회 방식으로 해결이 안되면 DTO조회
+     * 4. DTO조회 방식으로 안된다 -> NativeSQL or 스프링 JdbcTemplate
+     */
 
     @Data
     static class OrderDto {
